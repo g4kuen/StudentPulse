@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аккаунт пользователя</title>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        a {
+            display: block;
+            margin: 20px;
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #2980b9;
+        }
+
+        button {
+            background-color: #2ecc71;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #27ae60;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        a.table-link {
+            color: #3498db;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a.table-link:hover {
+            color: #2980b9;
+        }
+
+        a.table-link-edit {
+            color: #2ecc71;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a.table-link-edit:hover {
+            color: #27ae60;
+        }
+
+        a.table-link-delete {
+            color: #e74c3c;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a.table-link-delete:hover {
+            color: #c0392b;
+        }
+
+        a.create-link {
+            display: block;
+            margin: 20px;
+            background-color: #3498db;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        a.create-link:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+<script>
+        function showLessons() {
+            document.getElementById('lessons-table').style.display = 'table';
+            document.getElementById('reviews-table').style.display = 'none';
+        }
+        function showReviews() {
+            document.getElementById('lessons-table').style.display = 'none';
+            document.getElementById('reviews-table').style.display = 'table';
+        }
+    </script>
+   <h2>Аккаунт пользователя: {% if user.is_authenticated %}{{ user.username }}{% else %}Гость{% endif %}</h2>
+    <a href="{% url 'custom_logout' %}">Выйти из аккаунта</a>
+    <button onclick="showLessons()">Показать ваши занятия</button>
+    <button onclick="showReviews()">Покзать ваши отзывы</button>
+
+    <table id="lessons-table" style="display: none;">
+        <thead>
+        <tr>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Ссылка на детали занятия</th>
+            <th>Редактировать</th>
+            <th>Удалить</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for lesson in user_lessons %}
+            <tr>
+                <td>{{ lesson.title }}</td>
+                <td>{{ lesson.description }}</td>
+                <td><a href="{% url 'lesson_detail' pk=lesson.id %}"><p>Статистика:
+        {% if lesson.avg_rating_criterion1 %}{{ lesson.avg_rating_criterion1 }}{% else %}N/A{% endif %} |
+        {% if lesson.avg_rating_criterion2 %}{{ lesson.avg_rating_criterion2 }}{% else %}N/A{% endif %} |
+        {% if lesson.avg_rating_criterion3 %}{{ lesson.avg_rating_criterion3 }}{% else %}N/A{% endif %} |
+        {% if lesson.avg_rating_criterion4 %}{{ lesson.avg_rating_criterion4 }}{% else %}N/A{% endif %}
+    </p></a></td>
+                <td><a href="{% url 'edit_lesson' pk=lesson.id %}">Редактирование</a></td>
+                <td><a href="{% url 'delete_lesson' pk=lesson.id %}">Удаление</a></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+
+    <table id="reviews-table" style="display: none;">
+         <thead>
+        <tr>
+            <th>Текст отзыва</th>
+            <th>Название занятия</th>
+            <th>Редактировать</th>
+            <th>Удалить</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for review in user_reviews %}
+            <tr>
+                <td>{{ review.content }}</td>
+                <td>{{ review.lesson.title }}</td>
+                <td><a href="{% url 'edit_review' pk=review.id %}">Редактирование</a></td>  <!-- Ссылка на редактирование -->
+                <td><a href="{% url 'delete_review' pk=review.id %}">Удаление</a></td>  <!-- Ссылка на удаление -->
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+
+    <a href="{% url 'create_lesson' %}" class="create-link">Создать занятие</a>
+</body>
+</html>
